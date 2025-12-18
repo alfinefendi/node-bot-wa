@@ -1,6 +1,6 @@
 const path = require('path');
 const express = require('express')
-const { Client } = require('whatsapp-web.js');
+const { Client, LocalAuth } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
 
 const app = express()
@@ -10,8 +10,18 @@ app.use(express.static(path.join(__dirname, 'public')))
 
 let data = []
 
-
-const client = new Client();
+const client = new Client({
+  authStrategy: new LocalAuth(),
+  puppeteer: {
+    headless: true,
+    args: [
+      '--no-sandbox',
+      '--disable-setuid-sandbox',
+      '--disable-dev-shm-usage',
+      '--disable-gpu'
+    ]
+  }
+});
 
 // Using async/await
 async function generateQr(qr) {
