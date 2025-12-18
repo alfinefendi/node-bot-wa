@@ -1,5 +1,15 @@
+const path = require('path');
+const express = require('express')
 const { Client } = require('whatsapp-web.js');
 const qrcode = require('qrcode-terminal');
+
+const app = express()
+
+app.use(express.static(path.join(__dirname, 'public')))
+
+
+let data = []
+
 
 const client = new Client();
 
@@ -24,7 +34,23 @@ client.on('ready', () => {
 });
 
 client.on("message_create", message => {
-    console.log(message.body)
+    data.push(
+      message = {
+        body: message.body,
+        timestamp: message.timestamp
+      }
+    )
 })
 
 client.initialize();
+
+app.get('/api/data', (req, res) => {
+  res.json({
+    message: 'ok',
+    data: data,
+  })
+})
+
+app.listen(5001, () => {
+   console.log(`Server running at http://localhost:5001`);
+})
